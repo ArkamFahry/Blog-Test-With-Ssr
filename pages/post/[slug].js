@@ -36,21 +36,22 @@ const PostDetails = ({ post }) => {
 export default PostDetails;
 
 
-export async function getServerSideProps({ params }) {
+export async function getStaticProps({ params }) {
     const data = await getPostDetails(params.slug)
   
     return {
-      props: { post: data }
+      props: { post: data },
+      revalidate: 10,
     }
 }
   
 // Specify dynamic routes to pre-render pages based on data.
 // The HTML is generated at build time and will be reused on each request.
-// export async function getStaticPaths() {
-//     const posts = await getPosts();
+export async function getStaticPaths() {
+    const posts = await getPosts();
 
-//     return {
-//         paths: posts.map(({ node: { slug }}) => ({ params: { slug }})),
-//         fallback: true,
-//     }
-// }
+    return {
+        paths: posts.map(({ node: { slug }}) => ({ params: { slug }})),
+        fallback: 'blocking'
+    }
+}
